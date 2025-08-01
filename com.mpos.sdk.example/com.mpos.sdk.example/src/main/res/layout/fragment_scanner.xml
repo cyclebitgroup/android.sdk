@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/black"
         android:gravity="top|center_horizontal"
         android:text="@string/scanner_lbl_hint"
         />

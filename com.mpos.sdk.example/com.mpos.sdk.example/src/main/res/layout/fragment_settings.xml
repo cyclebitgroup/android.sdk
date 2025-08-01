@@ -42,6 +42,15 @@
 			android:layout_gravity="center_horizontal"
 			android:text="@string/settings_btn_config"
 			/>
+
+		<Button
+			android:id="@+id/settings_btn_settlement"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:text="@string/settings_btn_settlement"
+			/>
+
 		<Button
 			android:id="@+id/settings_btn_keys"
 			android:layout_width="match_parent"

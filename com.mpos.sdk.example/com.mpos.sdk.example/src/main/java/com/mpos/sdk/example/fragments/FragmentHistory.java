@@ -144,12 +144,6 @@ public class FragmentHistory extends Fragment implements ReversePaymentDialog.On
 		final Dialog dlgTrInfo = new Dialog(getActivity(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 		dlgTrInfo.setContentView(dialogView);
 
-		String fiscalStatus = "";
-		if (trItem.getFiscalInfo() != null)
-			try {
-				fiscalStatus = trItem.getFiscalInfo().getJSON().toString(2);
-			} catch (Exception e) { e.printStackTrace(); }
-
         ((EditText)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_id)).setText(String.valueOf(trItem.getID()));
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_date)).setText(String.valueOf(trItem.getDate()));
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_title)).setText(String.valueOf(trItem.getDescription()));
@@ -158,7 +152,6 @@ public class FragmentHistory extends Fragment implements ReversePaymentDialog.On
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_paytype)).setText(trItem.getCard().getIin());
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_pan)).setText(trItem.getCard().getPanMasked());
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_state)).setText(new StringBuilder(trItem.getStateDisplay()).append(" (").append(trItem.getSubStateDisplay()).append(")"));
-		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_fiscal_status)).setText(fiscalStatus);
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_invoice)).setText(trItem.getInvoice());
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_extid)).setText(trItem.getExtID());
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_exttrandata)).setText(trItem.getExtTranData());
@@ -194,22 +187,6 @@ public class FragmentHistory extends Fragment implements ReversePaymentDialog.On
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_state)).setText(new StringBuilder(trItem.getStateDisplay()).append(" (").append(trItem.getSubStateDisplay()).append(")"));
 		((TextView)dialogView.findViewById(R.id.history_tr_details_dlg_lbl_state)).setTextColor(stateColor);
 
-		dialogView.findViewById(R.id.history_tr_details_dlg_btn_invoice).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				String invoice = Utils.BuildInvoice(((MainActivity) getActivity()).Account, trItem);
-				Log.i(trItem.getID(), invoice);
-				TextView textView = new TextView(getContext());
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-				textView.setTypeface(Typeface.MONOSPACE);
-				textView.setText(invoice);
-				textView.setTextColor(Color.WHITE);
-				textView.setGravity(Gravity.CENTER);
-				new AlertDialog.Builder(getContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-						.setView(textView)
-						.create().show();
-			}
-		});
 		dialogView.findViewById(R.id.history_tr_details_dlg_btn_cancel).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -225,18 +202,6 @@ public class FragmentHistory extends Fragment implements ReversePaymentDialog.On
 
 		dialogView.findViewById(R.id.history_tr_details_dlg_btn_cancel).setVisibility(trItem.canCancel() || trItem.canCancelPartial() || trItem.canCancelCNP() || trItem.canCancelCNPPartial() ? View.VISIBLE : View.GONE);
 		dialogView.findViewById(R.id.history_tr_details_dlg_btn_return).setVisibility(trItem.canReturn() || trItem.canReturnPartial() || trItem.canReturnCNP() || trItem.canReturnCNPPartial() ? View.VISIBLE : View.GONE);
-
-		TransactionItem.FiscalInfo fiscalInfo = trItem.getFiscalInfo();
-		boolean fiscalizeRequired = fiscalInfo != null
-				&& fiscalInfo.getFiscalStatus() != TransactionItem.FiscalInfo.FiscalStatus.CREATED
-				&& fiscalInfo.getFiscalStatus() != TransactionItem.FiscalInfo.FiscalStatus.SUCCESS;
-		dialogView.findViewById(R.id.histoty_tr_details_dlg_btn_fiscalize).setVisibility(fiscalizeRequired ? View.VISIBLE : View.GONE);
-		dialogView.findViewById(R.id.histoty_tr_details_dlg_btn_fiscalize).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				new FiscalizeTask(dlgTrInfo).execute(trItem.getID());
-			}
-		});
 
 		try {
 			PaymentController.getInstance().initPaymentSession();
@@ -457,32 +422,4 @@ public class FragmentHistory extends Fragment implements ReversePaymentDialog.On
         }
     }
 
-	private class FiscalizeTask extends CommonAsyncTask<String, Void, APITryGetPaymentStatusResult>{
-		private Dialog parent;
-
-		public FiscalizeTask(Dialog parent) {
-			super(parent.getContext());
-			this.parent = parent;
-		}
-
-		@Override
-		protected APITryGetPaymentStatusResult doInBackground(String... strings) {
-			return PaymentController.getInstance().fiscalize(getContext().getApplicationContext(), strings[0]);
-		}
-
-		@Override
-		protected void onPostExecute(APITryGetPaymentStatusResult result) {
-			super.onPostExecute(result);
-
-			if (result != null && result.isValid() && result.getTransaction() != null) {
-				Toast.makeText(parent.getContext(), R.string.success, Toast.LENGTH_LONG).show();
-				parent.dismiss();
-				showTransactionDetails(result.getTransaction());
-			} else
-				Toast.makeText(parent.getContext(), R.string.failed, Toast.LENGTH_LONG).show();
-
-			if (!parent.isShowing())
-				parent.show();
-		}
-	}
 }

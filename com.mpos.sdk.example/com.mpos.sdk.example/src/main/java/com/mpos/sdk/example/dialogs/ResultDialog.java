@@ -33,8 +33,8 @@ import com.mpos.sdk.example.Utils;
 public class ResultDialog extends Dialog {
     private TextView lblOperation, lblState, lblID, lblInvoice, lblExtID, lblAppcode, lblTerminal,
             lblIIN, lblPAN, lblPANFull, lblTrack2, lblLink,
-            lblEMV, lblSignature, lblFiscalStatus, lblAuxData, lblExtTranData;
-    private Button btnAdjust, btnFiscalStatus, btnInvoice, btnFiscalize;
+            lblEMV, lblSignature, lblAuxData, lblExtTranData;
+    private Button btnAdjust;
 
     private PaymentResultContext mPaymentResultContext;
     public ResultDialog(final Context context, final PaymentResultContext paymentResultContext, final boolean isReverse) {
@@ -77,56 +77,6 @@ public class ResultDialog extends Dialog {
             }
         });
 
-        btnFiscalStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-                new CheckFiscalStatusTask(ResultDialog.this).execute(transactionItem.getID());
-            }
-        });
-
-        btnFiscalize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new FiscalizeTask(ResultDialog.this).execute(transactionItem.getID());
-            }
-        });
-
-        if (transactionItem != null) {
-            btnInvoice.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String invoice = Utils.BuildInvoice(((MainActivity) context).Account, transactionItem);
-                    Log.i(transactionItem.getID(), invoice);
-                    TextView textView = new TextView(getContext());
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-                    textView.setTypeface(Typeface.MONOSPACE);
-                    textView.setText(invoice);
-                    textView.setTextColor(Color.WHITE);
-                    textView.setGravity(Gravity.CENTER);
-                    new AlertDialog.Builder(getContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-                            .setView(textView)
-                            .create().show();
-                }
-            });
-
-            TransactionItem.FiscalInfo fiscalInfo = transactionItem.getFiscalInfo();
-            boolean fiscalizeRequired = fiscalInfo != null
-                    && fiscalInfo.getFiscalStatus() != TransactionItem.FiscalInfo.FiscalStatus.CREATED
-                    && fiscalInfo.getFiscalStatus() != TransactionItem.FiscalInfo.FiscalStatus.SUCCESS;
-            btnFiscalize.setVisibility(fiscalizeRequired ? View.VISIBLE : View.GONE);
-
-            if (transactionItem.getPurchases() != null) {
-                String auxData = "";
-                for (Purchase p : transactionItem.getPurchases()) {
-                    auxData += p.getJSON() + "\n";
-                }
-                lblAuxData.setText(auxData);
-            }
-
-        } else
-            btnInvoice.setVisibility(View.GONE);
-
 
         if (transactionItem == null) {
             LinearLayout container = (LinearLayout) lblState.getParent();
@@ -145,9 +95,6 @@ public class ResultDialog extends Dialog {
             lblLink.setVisibility(View.GONE);
             container.getChildAt(container.indexOfChild(lblEMV) - 1).setVisibility(View.GONE);
             lblEMV.setVisibility(View.GONE);
-            container.getChildAt(container.indexOfChild(lblFiscalStatus) - 1).setVisibility(View.GONE);
-            lblFiscalStatus.setVisibility(View.GONE);
-            btnFiscalize.setVisibility(View.GONE);
         }
     }
 
@@ -168,11 +115,7 @@ public class ResultDialog extends Dialog {
         lblLink         = (TextView)findViewById(R.id.tr_details_dlg_lbl_link);
         lblSignature 	= (TextView)findViewById(R.id.tr_details_dlg_lbl_signature);
         lblAuxData      = (TextView)findViewById(R.id.tr_details_dlg_lbl_auxdata);
-        lblFiscalStatus	= (TextView)findViewById(R.id.tr_details_dlg_lbl_fiscal_status);
         btnAdjust 		= (Button)findViewById(R.id.tr_details_dlg_btn_adjust);
-        btnFiscalStatus = (Button)findViewById(R.id.tr_details_dlg_btn_fiscal_status);
-        btnInvoice      = (Button)findViewById(R.id.tr_details_dlg_btn_invoice);
-        btnFiscalize    = (Button)findViewById(R.id.tr_details_dlg_btn_fiscalize);
     }
 
     private void update(TransactionItem transactionItem) {
@@ -197,15 +140,6 @@ public class ResultDialog extends Dialog {
                 lblLink.setText(externalPayment.getLink());
             }
         }
-
-        String fiscalStatus = "";
-        if (transactionItem.getFiscalInfo() != null)
-            try {
-                fiscalStatus = transactionItem.getFiscalInfo().getJSON().toString(2);
-            } catch (Exception e) { e.printStackTrace(); }
-
-
-        lblFiscalStatus.setText(fiscalStatus);
     }
 
     private void update(ScheduleItem scheduleItem) {
@@ -220,44 +154,5 @@ public class ResultDialog extends Dialog {
         lblPAN.setText(scheduleItem.getCard().getPanMasked().replace("*", " **** "));
         lblPANFull.setText(scheduleItem.getCard().getPANFull());
         lblTrack2.setText(scheduleItem.getCard().getTrack2());
-    }
-
-    private static class CheckFiscalStatusTask extends CommonAsyncTask<String, Void, APITryGetPaymentStatusResult> {
-        private ResultDialog parent;
-
-        public CheckFiscalStatusTask(ResultDialog parent) {
-            super(parent.getContext());
-            this.parent = parent;
-        }
-
-        @Override
-        protected APITryGetPaymentStatusResult doInBackground(String... strings) {
-            return PaymentController.getInstance().tryGetFiscalInfo(parent.getContext().getApplicationContext(), strings[0]);
-        }
-
-        @Override
-        protected void onPostExecute(APITryGetPaymentStatusResult result) {
-            super.onPostExecute(result);
-
-            if (result != null && result.isValid() && result.getTransaction() != null) {
-                Toast.makeText(parent.getContext(), R.string.success, Toast.LENGTH_LONG).show();
-                parent.update(result.getTransaction());
-            } else
-                Toast.makeText(parent.getContext(), R.string.failed, Toast.LENGTH_LONG).show();
-
-            if (!parent.isShowing())
-                parent.show();
-        }
-    }
-
-    private static class FiscalizeTask extends CheckFiscalStatusTask {
-        public FiscalizeTask(ResultDialog parent) {
-            super(parent);
-        }
-
-        @Override
-        protected APITryGetPaymentStatusResult doInBackground(String... strings) {
-            return PaymentController.getInstance().fiscalize(getContext().getApplicationContext(), strings[0]);
-        }
     }
 }

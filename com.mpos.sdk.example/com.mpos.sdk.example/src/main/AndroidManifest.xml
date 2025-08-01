@@ -58,7 +58,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        tools:replace="android:allowBackup"
+        android:supportsRtl="false"
+        tools:replace="android:allowBackup, android:supportsRtl"
         >
         <uses-library
             android:name="com.odm"
@@ -69,7 +70,7 @@
         <activity
             android:name="com.mpos.sdk.example.MainActivity"
             android:label="@string/app_name" 
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:multiprocess="true"
             android:exported="true"

@@ -33,8 +33,8 @@ public class ReversePaymentDialog extends Dialog {
     private OnPaymentCancelledListener cancelledListener;
     private JSONObject auxData;
     private Activity mActivity;
-    private EditText edtAmount, edtERN, edtPhone, edtEmail, edtFiscalRoute;
-    private CheckBox cbSuppressSignature, cbSkipFiscalization;
+    private EditText edtAmount, edtERN, edtPhone, edtEmail;
+    private CheckBox cbSuppressSignature;
     private Button btnConfirm;
 
 
@@ -60,9 +60,7 @@ public class ReversePaymentDialog extends Dialog {
         edtERN = (EditText)findViewById(R.id.reverse_dlg_edt_ern);
         edtPhone = (EditText)findViewById(R.id.reverse_dlg_edt_phone);
         edtEmail = (EditText)findViewById(R.id.reverse_dlg_edt_email);
-        edtFiscalRoute = (EditText)findViewById(R.id.reverse_dlg_edt_fiscalroute);
         cbSuppressSignature = (CheckBox)findViewById(R.id.reverse_dlg_cb_suppress_signature);
-        cbSkipFiscalization = (CheckBox)findViewById(R.id.reverse_dlg_cb_skip_fiscalization);
         btnConfirm = (Button)findViewById(R.id.reverse_btn_confirm);
 
         edtAmount.setText(this.amount.toString());
@@ -86,6 +84,9 @@ public class ReversePaymentDialog extends Dialog {
 
         if ("CAD".equals(ReversePaymentDialog.this.currency))
             curr = PaymentController.Currency.CAD;
+
+        if ("KZT".equals(ReversePaymentDialog.this.currency))
+            curr = PaymentController.Currency.KZT;
 
         return curr;
     }
@@ -203,11 +204,9 @@ public class ReversePaymentDialog extends Dialog {
             reversePaymentContext.setAuxData(auxData);
             reversePaymentContext.setReceiptPhone(edtPhone.getText().toString());
             reversePaymentContext.setReceiptEmail(edtEmail.getText().toString());
-            reversePaymentContext.setFiscalRouteProfile(edtFiscalRoute.getText().toString());
             reversePaymentContext.setExtID("TEST_APP");
             //reversePaymentContext.setExtTranData("TEST_APP");
             reversePaymentContext.setSuppressSignatureWaiting(cbSuppressSignature.isChecked());
-            reversePaymentContext.setSkipFiscalization(cbSkipFiscalization.isChecked());
             if (PaymentController.getInstance().getReaderType() != null && PaymentController.getInstance().getReaderType().isTTK())
                 reversePaymentContext.setErn(Integer.parseInt(edtERN.getText().toString()));
             PaymentController.getInstance().reversePayment(getContext(), reversePaymentContext);

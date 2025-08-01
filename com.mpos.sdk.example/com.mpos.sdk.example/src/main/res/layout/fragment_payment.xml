@@ -36,7 +36,7 @@
 	            <TextView
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            android:text="@string/payment_lbl_amount" 
+		            android:text="@string/payment_lbl_amount"
 		            />
 	            
 	            <EditText 
@@ -100,20 +100,6 @@
 			android:textSize="16sp"
 			android:text=""
 			/>
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/payment_lbl_fiscal_route"
-			/>
-		<EditText
-			android:id="@+id/payment_edt_fiscalroute"
-			android:layout_height="35dp"
-			android:layout_width="match_parent"
-			android:textSize="16sp"
-			android:text=""
-			/>
-
-
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -203,6 +189,14 @@
 				/>
 		</RadioGroup>
 		<CheckBox
+			android:id="@+id/payment_cb_autonfc"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:checked="false"
+			android:textSize="16sp"
+			android:text="@string/payment_cb_autonfc"
+			/>
+		<CheckBox
 			android:id="@+id/payment_cb_deferred"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
@@ -217,14 +211,6 @@
 			android:checked="false"
 			android:textSize="16sp"
 			android:text="@string/payment_cb_suppress_signature"
-			/>
-		<CheckBox
-			android:id="@+id/payment_cb_skip_fiscalization"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:checked="false"
-			android:textSize="16sp"
-			android:text="@string/payment_cb_skip_fiscalization"
 			/>
 		<CheckBox
 	        android:id="@+id/payment_cb_product"
@@ -444,13 +430,6 @@
 			android:layout_width="match_parent"
 			android:layout_marginBottom="15dp"
 			android:text="@string/payment_btn_credit_voucher"
-			/>
-		<Button
-			android:id="@+id/payment_btn_fiscal"
-			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			android:layout_marginBottom="15dp"
-			android:text="@string/payment_btn_fiscal"
 			/>
 		<Button
 			android:id="@+id/payment_btn_pay_background"

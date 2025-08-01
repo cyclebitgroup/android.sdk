@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MposTestApp</string>
     <string name="def_login"></string>
     <string name="def_password"></string>
 
+
+    <string name="app_name">MposTestApp</string>
     <string name="EMV_CARD_BLOCKED">Card is blocked</string>
     <string name="EMV_CARD_ERROR">Card error</string>
     <string name="EMV_CARD_NOT_SUPPORTED">Card is not supported</string>
@@ -45,7 +46,6 @@
     <string name="history_tr_details_dlg_btn_invoice">Show invoice</string>
     <string name="history_tr_details_dlg_btn_cancel">Cancel payment</string>
     <string name="history_tr_details_dlg_btn_return">Perform a refund</string>
-    <string name="tr_details_dlg_btn_fiscalize">Fiscalize</string>
     <string name="history_tr_details_dlg_lbl_amount">Amount:</string>
     <string name="history_tr_details_dlg_lbl_amount_eff">Balance:</string>
     <string name="history_tr_details_dlg_lbl_date">Date:</string>
@@ -60,7 +60,6 @@
     <string name="history_tr_details_dlg_lbl_photo_url">Attached image:</string>
     <string name="history_tr_details_dlg_lbl_signature_url">Signature:</string>
     <string name="history_tr_details_dlg_lbl_state">State:</string>
-    <string name="history_tr_details_dlg_lbl_fiscal_status">Fiscal status:</string>
     <string name="history_tr_details_dlg_lbl_title">Description:</string>
     <string name="login_dlg_btn_ok">Login</string>
     <string name="login_dlg_lbl_login">Login</string>
@@ -71,7 +70,6 @@
     <string name="payment_btn_pay">Pay</string>
     <string name="payment_btn_pay_nfc">Pay with NFC</string>
     <string name="payment_btn_credit_voucher">Credit-voucher</string>
-    <string name="payment_btn_fiscal">Fiscal</string>
     <string name="payment_cb_end_type">Repeat count</string>
     <string name="payment_rb_card">Card</string>
     <string name="payment_rb_cash">Cash</string>
@@ -81,8 +79,8 @@
     <string name="payment_rb_outer">Outer card</string>
     <string name="payment_rb_prepay">Prepay</string>
     <string name="payment_cb_deferred">Deferred payment</string>
+    <string name="payment_cb_autonfc">Auto NFC (Р17 only)</string>
     <string name="payment_cb_suppress_signature">Signature will not be sent</string>
-    <string name="payment_cb_skip_fiscalization">Skip fiscalization</string>
     <string name="payment_cb_product">Product payment</string>
     <string name="payment_cb_regular">Regular payment</string>
     <string name="payment_default_dates">01.01.2016;02.02.2016;03.03.2016;</string>
@@ -129,9 +127,13 @@
     <string name="reader_state_ready_nfconly">Tap card</string>
     <string name="reader_state_ready_emvonly">Insert card</string>
     <string name="reader_state_ready_emv_or_tap">Tap or insert card</string>
+    <string name="reader_state_tap_again">Please tap the card again</string>
+    <string name="reader_state_try_another_interface">Wireless payment not available</string>
+    <string name="reader_state_see_phone">Please refer to your mobile device</string>
     <string name="sdcard_needed">Insert SD card</string>
     <string name="settings_lbl_title">Select reader</string>
     <string name="settings_btn_config">Config</string>
+    <string name="settings_btn_settlement">Settlement</string>
     <string name="settings_btn_unattended">Unattended mode</string>
     <string name="settings_btn_softpos_reg">SOFTPOS registration</string>
     <string name="settings_cb_softpos_reg_force">Forced</string>
@@ -151,7 +153,6 @@
     <string name="tab_scan">Scanner</string>
     <string name="tab_print">Printer</string>
     <string name="tr_details_btn_adjust">Send receipt</string>
-    <string name="tr_details_btn_fiscal_status">Check fiscal status</string>
     <string name="tr_details_dlg_lbl_appcode">Approval code:</string>
     <string name="tr_details_dlg_lbl_emv">EMV data</string>
     <string name="tr_details_dlg_lbl_id">Transaction ID:</string>
@@ -185,12 +186,6 @@
     <string name="payment_toast_pin_entered">PIN entered</string>
     <string name="payment_toast_battery_format">Charge level: %.0f%%</string>
     <string name="payment_toast_error_field_format">Invalid input: %1$s</string>
-    <string name="fiscal_dlg_title">Fiscal data</string>
-    <string name="fiscal_dlg_lbl_trid">@string/tr_details_dlg_lbl_id</string>
-    <string name="fiscal_dlg_lbl_printer">Printer ID</string>
-    <string name="fiscal_dlg_lbl_doc">Document ID</string>
-    <string name="fiscal_dlg_lbl_cvc">CVC</string>
-    <string name="fiscal_dlg_lbl_shift">Shift number</string>
     <string-array name="input_types">
         <item>Cash</item>
         <item>Magnetic tape</item>
@@ -215,11 +210,8 @@
 
     <string name="purchases_dlg_remove_format">Remove aux-product %s?</string>
     <string name="purchases_dlg_btn_update_amount">Recalculate payment amount</string>
-
-    <string name="payment_lbl_fiscal_route">Fiscal route</string>
-
-    <string name="payment_lbl_ext_id">ExtID</string>
-    <string name="payment_lbl_client_product_code">Client product code</string>
-    <string name="payment_lbl_ext_trandata">ExtTranData</string>
-
+    <string name="payment_lbl_client_product_code">Client product code:</string>
+    <string name="payment_lbl_ext_id">ExtId:</string>
+    <string name="payment_lbl_ext_trandata">ExtTranData:</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

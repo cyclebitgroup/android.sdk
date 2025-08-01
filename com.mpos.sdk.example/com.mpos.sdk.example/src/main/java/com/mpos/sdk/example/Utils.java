@@ -101,8 +101,5 @@ public class Utils {
         }
     }
 
-    public static String BuildInvoice(Account account, TransactionItem transaction) {
-        //TODO
-       return "";
-    }
+
 }

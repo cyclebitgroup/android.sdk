@@ -29,15 +29,22 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import com.mpos.sdk.PaymentController;
 import com.mpos.sdk.PaymentController.ReaderType;
 import com.mpos.sdk.PaymentControllerException;
+import com.mpos.sdk.PaymentControllerListener;
+import com.mpos.sdk.PaymentResultContext;
 import com.mpos.sdk.SoftposActionCallback;
 import com.mpos.sdk.RegistrationCallback;
+import com.mpos.sdk.entities.SettlementResult;
+import com.mpos.sdk.example.CommonAsyncTask;
 import com.mpos.sdk.example.dialogs.ConfigDialog;
 import com.mpos.sdk.example.Consts;
 import com.mpos.sdk.example.R;
@@ -50,8 +57,9 @@ public class FragmentSettings extends Fragment {
 
 	private ListView lvReaders;
 	private ReadersAdapter mAdapter;
-	private Button btnConfig, btnKeys;
+	private Button btnConfig, btnKeys, btnSettlement;
 	private Button btnSoftposReg, btnRemoveSoftposAccount;
+	private SettlementTask settlementTask;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -193,6 +201,16 @@ public class FragmentSettings extends Fragment {
 			}
 		});
 
+		btnSettlement = (Button)view.findViewById(R.id.settings_btn_settlement);
+		btnSettlement.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				settlementTask = new SettlementTask(getContext());
+				settlementTask.execute();
+			}
+		});
+
+
 		btnSoftposReg = (Button)view.findViewById(R.id.settings_btn_softpos_reg);
 		btnSoftposReg.setVisibility(PaymentController.getInstance().getReaderType() == ReaderType.SOFTPOS ? View.VISIBLE : View.GONE);
 		btnSoftposReg.setOnClickListener(new View.OnClickListener() {
@@ -273,6 +291,14 @@ public class FragmentSettings extends Fragment {
 		});
 		return view;
 	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if (settlementTask != null)
+			settlementTask.cancel(true);
+	}
+
 
 	private String getReaderName(PaymentController.ReaderType reader) {
 		return reader.getName();
@@ -393,4 +419,163 @@ public class FragmentSettings extends Fragment {
 			return convertView;
 		}
 	}
+
+
+	private class SettlementTask extends CommonAsyncTask<Void, Void, SettlementResult> implements PaymentControllerListener {
+		private final CountDownLatch readerReadyLatch = new CountDownLatch(1);
+		private boolean readerReady;
+
+		public SettlementTask(Context context) {
+			super(context);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			PaymentController.getInstance().setPaymentControllerListener(this);
+			PaymentController.getInstance().enable();
+		}
+
+		@Override
+		protected void onCancelled() {
+			PaymentController.getInstance().setPaymentControllerListener(null);
+			PaymentController.getInstance().disable();
+
+			super.onCancelled();
+		}
+
+		@Override
+		protected SettlementResult doInBackground(Void... voids) {
+			try {
+				readerReadyLatch.await();
+				return readerReady ? PaymentController.getInstance().settlement() : null;
+			} catch (PaymentControllerException e) {
+				return new SettlementResult().setSuccess(false).setErrorMessage(e.getMessage());
+			} catch (InterruptedException e) {
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(SettlementResult result) {
+			super.onPostExecute(result);
+			PaymentController.getInstance().setPaymentControllerListener(null);
+			PaymentController.getInstance().disable();
+
+			if (result != null) {
+				String message = result.isSuccess() ? getString(R.string.success) : (getString(R.string.failed) + " : " + result.getErrorMessage());
+				Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+			} else
+				Toast.makeText(getActivity(), R.string.failed, Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		public void onReaderEvent(PaymentController.ReaderEvent event, Map<String, String> params) {
+			if (event == PaymentController.ReaderEvent.CONNECTED || event == PaymentController.ReaderEvent.START_INIT) {
+				//ignore
+			} else if (event == PaymentController.ReaderEvent.INIT_SUCCESSFULLY) {
+				readerReady = true;
+				readerReadyLatch.countDown();
+			} else
+				readerReadyLatch.countDown();
+		}
+
+		//region ignored
+		@Override
+		public void onTransactionStarted(String transactionID) {
+
+		}
+
+		@Override
+		public void onFinished(PaymentResultContext result) {
+
+		}
+
+		@Override
+		public void onError(PaymentController.PaymentError error, String errorMessage, int extErrorCode) {
+
+		}
+
+
+
+		@Override
+		public int onSelectApplication(List<String> apps) {
+			return 0;
+		}
+
+		@Override
+		public boolean onConfirmSchedule(List<Map.Entry<Date, Double>> steps, double totalAmount) {
+			return false;
+		}
+
+		@Override
+		public boolean onScheduleCreationFailed(PaymentController.PaymentError error, String errorMessage, int extErrorCode) {
+			return false;
+		}
+
+		@Override
+		public boolean onCancellationTimeout() {
+			return false;
+		}
+
+		@Override
+		public void onPinRequest() {
+
+		}
+
+		@Override
+		public void onPinEntered() {
+
+		}
+
+
+		@Override
+		public void onAutoConfigFinished(boolean success, String config, boolean isDefault) {
+
+		}
+
+		@Override
+		public void onReaderConfigFinished(boolean success) {
+
+		}
+
+		@Override
+		public void onBarcodeScanned(String barcode) {
+
+		}
+
+		@Override
+		public boolean onBLCheck(String hashPan, String last4digits) {
+			return false;
+		}
+
+		@Override
+		public void onBatteryState(double percent) {
+
+		}
+
+		@Override
+		public PaymentController.PaymentInputType onSelectInputType(List<PaymentController.PaymentInputType> allowedInputTypes) {
+			return null;
+		}
+
+		@Override
+		public void onSwitchedToCNP() {
+
+		}
+
+		@Override
+		public void onInjectFinished(boolean success) {
+
+		}
+
+		@Override
+		public void onReaderConfigUpdate(String s, Hashtable<String, Object> hashtable) {
+
+		}
+
+
+		//endregion
+	}
+
 }

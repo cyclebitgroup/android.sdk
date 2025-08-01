@@ -58,9 +58,9 @@ public class MainActivity extends PermissionsActivity implements TabHost.OnTabCh
 
 		setContentView(R.layout.activity_main);
 		((TextView) findViewById(R.id.version)).setText(getString(R.string.app_name) + " " + PaymentController.VERSIONCODE
-				+ "\n" + Build.MANUFACTURER + " " + Build.MODEL + " " + Build.VERSION.RELEASE);
+		+ "\n" + Build.MANUFACTURER + " " + Build.MODEL + " " + Build.VERSION.RELEASE);
 
-		mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+		mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setOnTabChangedListener(this);
 
 		PaymentController.CHECK_CONFIG_BEFORE_PAYMENT = false;
@@ -79,11 +79,11 @@ public class MainActivity extends PermissionsActivity implements TabHost.OnTabCh
 						p.put("AccessCode", accessCode);
 						p.put("PackageName", Utils.getString(this, Consts.SavedParams.READER_SOFTPOS_PACKAGE));
 						PaymentController.getInstance().setCustomReaderParams(p);
+					} else if (ReaderType.valueOf(readerType) == ReaderType.P17) {
+						Hashtable<String, Object> p = new Hashtable<>();
+						p.put("NOTUP", true);
+						PaymentController.getInstance().setCustomReaderParams(p);
 					}
-
-					Hashtable<String, Object> p = new Hashtable<>();
-					p.put("NOTUP", true);
-					PaymentController.getInstance().setCustomReaderParams(p);
 				} catch (PaymentControllerException e) {
 					Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 				}
@@ -108,14 +108,14 @@ public class MainActivity extends PermissionsActivity implements TabHost.OnTabCh
 			Products = (ArrayList<PaymentProductItem>) savedInstanceState.getSerializable(getClass().getCanonicalName() + ".Products");
 		}
 
-		if (PaymentController.getInstance().getReaderType() == null)
+		else if (PaymentController.getInstance().getReaderType() == null)
 			try {
 				PaymentController.getInstance().setReaderType(this, ReaderType.P17, null);
 			} catch (PaymentControllerException e) {
 				e.printStackTrace();
 			}
 
-		PaymentController.getInstance().setSingleStepEMV(true);
+	 	PaymentController.getInstance().setSingleStepEMV(true);
 		PaymentController.getInstance().setRepeatOnError(false);
 		PaymentController.getInstance().setClientProductCode(getString(R.string.app_name));
 		if (Account == null)

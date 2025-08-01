@@ -16,12 +16,12 @@
         android:layout_height="match_parent"
         android:inputType="number"
         android:maxLength="4"
-        android:text="1227"
+        android:text="1"
         />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="5dp"
-        android:text="покупатель (клиент)"
+        android:text="client"
         />
 </LinearLayout>

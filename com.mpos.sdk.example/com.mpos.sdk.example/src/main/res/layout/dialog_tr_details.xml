@@ -290,22 +290,6 @@
 			android:textColor="#aaaaaa"
 			/>
 
-        <TextView
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textColor="#ffffff"
-            android:text="@string/history_tr_details_dlg_lbl_fiscal_status"
-            />
-
-        <EditText
-            android:id="@+id/tr_details_dlg_lbl_fiscal_status"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:textColor="#aaaaaa"
-			android:inputType="none"
-			android:background="@null"
-            />
 
         <Button
             android:id="@+id/tr_details_dlg_btn_invoice"
@@ -322,20 +306,6 @@
 			android:text="@string/tr_details_btn_adjust"
 			/>
 
-		<Button
-			android:id="@+id/tr_details_dlg_btn_fiscal_status"
-			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			android:layout_marginTop="10dp"
-			android:text="@string/tr_details_btn_fiscal_status"
-			/>
-
-		<Button
-			android:id="@+id/tr_details_dlg_btn_fiscalize"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/tr_details_dlg_btn_fiscalize"
-			/>
 	</LinearLayout>
 
 </ScrollView>
